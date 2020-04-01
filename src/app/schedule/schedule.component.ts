@@ -14,11 +14,10 @@ import {ScheduleService} from './schedule.service';
 })
 export class ScheduleComponent implements OnInit {
   @ViewChild('monthSchedule') MonthlyComponent;
-  focusedMonthDateStart: Date;
   today: Date = new Date();
   selectedDate = new Date();
-  headers: string[] = [];
-  footers: string[] = [];
+  nextDate: Date;
+  previousDate: Date;
   isLarge = true;
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
@@ -37,13 +36,17 @@ export class ScheduleComponent implements OnInit {
     });
   }
 
-  gotoMonth( changeVal: number ) {
-    this.focusedMonthDateStart = this.scheduleService.setMidnightDate(
-      new Date(this.focusedMonthDateStart.getFullYear(), this.focusedMonthDateStart.getMonth() + changeVal)
-    );
-  }
-
   setDate(plannerDate: PlannerDate) {
     this.selectedDate = plannerDate.calendarDate;
+  }
+
+  nextSchedule() {
+    this.scheduleService.selectedDate.next(this.scheduleService.nextDate.value);
+    this.selectedDate = this.scheduleService.selectedDate.value;
+  }
+
+  previousSchedule() {
+    this.scheduleService.selectedDate.next(this.scheduleService.previousDate.value);
+    this.selectedDate = this.scheduleService.selectedDate.value;
   }
 }

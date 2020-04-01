@@ -10,6 +10,8 @@ import {PlannerDate} from '../domain/planner-date';
 })
 export class ScheduleService {
   selectedDate: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
+  previousDate: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
+  nextDate: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
   constructor(private http: HttpClient) { }
   private getEvents(params: HttpParams): Observable<PlannerEvent[]> {
     console.log(params);
@@ -48,6 +50,8 @@ export class ScheduleService {
     }
     startDate = this.setMidnightDate(new Date(startDate.getFullYear(), startDate.getMonth(), sundayAdjuster));
     endDate = this.setMidnightDate(new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + saturdayAdjuster));
+    this.previousDate.next(this.setMidnightDate(new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() - 1)));
+    this.nextDate.next(this.setMidnightDate(new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1)));
     let currentDate = this.setMidnightDate(new Date(startDate));
     const dataObservers: Array<Observable<PlannerEvent[]>> = [];
     let rowCounter = 0;
