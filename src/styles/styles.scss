@@ -1,0 +1,68 @@
+/* You can add global styles to this file, and also import other style files */
+@import 'variable';
+html, body { height: 100%; width: 100%}
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.content {
+  width: 100%;
+  margin: 30px;
+}
+.spacer {
+   flex: 1 1 auto;
+}
+
+table {
+  background-color: mat-color($primary, 200);
+}
+
+
+.calendar-container {
+  min-width: 511px;
+  margin: 15px;
+  overflow: auto;
+  width:95%;
+}
+
+.calendar-cell {
+  min-height: 100px;
+  max-height: 400px;
+  min-width: 73px;
+  overflow: auto;
+}
+.calendar-cell-event {
+  font-size: smaller;
+  padding-left: 15px ;
+  text-indent: -15px ;
+}
+
+.date-label {
+  text-align: center;
+}
+
+.date-label-has-events {
+  font-weight: bold;
+}
+
+.calendar-cell-current-month {
+  background-color: white;
+}
+
+.calendar-cell-today {
+  background-color: mat-color($accent, 200);
+}
+
+.calendar-cell-selected {
+  border-color: mat-color($accent, 400);
+}
+
+.calendar-cell-header {
+  font-weight: bold;
+  text-align: center;
+  background-color: inherit;
+  border-bottom-style: solid;
+}
+
+th.calendar-cell-footer {
+  font-weight: bold;
+  background-color: white;
+}

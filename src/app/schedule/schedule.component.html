@@ -1,0 +1,17 @@
+<div class="calendar-container" fxLayout="column" fxLayoutAlign="center" fxLayoutGap="30">
+  <div fxLayout="row" fxLayoutAlign="space-between">
+    <div>
+      <a mat-flat-button><mat-icon>navigate_before</mat-icon>{{ isLarge ? 'Previous': ''}}</a>
+    </div>
+    <div>
+      <h2 class="page-header">{{selectedDate | date: 'MMMM yyyy'}}</h2>
+    </div>
+    <div>
+      <a mat-flat-button>{{isLarge ? 'Next' : ''}}<mat-icon>navigate_next</mat-icon></a>
+    </div>
+  </div>
+  <app-monthly
+    #monthSchedule [selectedDate]="selectedDate"
+    [isLarge]="isLarge"
+    (dateSelectedChange)="setDate($event)"></app-monthly>
+</div>

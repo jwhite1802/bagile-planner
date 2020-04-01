@@ -28,8 +28,15 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "src/styles/styles.scss",
+              "src/styles/_variable.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles"
+              ]
+            },
             "scripts": []
           },
           "configurations": {
@@ -92,8 +99,15 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "src/styles/styles.scss",
+              "src/styles/_variable.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles"
+              ]
+            },
             "scripts": []
           }
         },
@@ -123,6 +137,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "bagile-planner"
+    }
+  },
+  "defaultProject": "bagile-planner",
+  "cli": {
+    "analytics": "ed619f66-37ac-499d-8612-4f097873867c"
+  }
 }

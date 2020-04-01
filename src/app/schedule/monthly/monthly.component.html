@@ -1,0 +1,33 @@
+<div fxLayout="column" fxLayoutAlign="space-between">
+  <table width="100%" cellspacing="1" cellpadding="1">
+    <thead>
+    <tr *ngIf="isLarge">
+      <th *ngFor="let weekday of headers" class="calendar-cell-header">{{weekday}}</th>
+    </tr>
+    <tr *ngIf="!isLarge">
+      <th *ngFor="let weekday of shortHeaders" class="calendar-cell-header">{{weekday}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let row of rows; index as rowIndex" class="calendar-cell-row">
+      <td *ngFor="let plannerDate of row; index as cellIndex" valign="top"
+          [ngClass]="{ 'calendar-cell-current-month': plannerDate.calendarDate.getMonth() === selectedDate.getMonth(),
+          'calendar-cell-today': scheduleService.areDatesEqual(plannerDate.calendarDate, today),
+          'calendar-cell-selected': selectedPlannerDate && scheduleService.areDatesEqual(plannerDate.calendarDate, selectedPlannerDate.calendarDate) }"
+          (click)="setNewDate(plannerDate)">
+        <div fxLayout="column" fxLayoutGap="5px;" fxLayoutAlign="start" class="calendar-cell">
+          <div class="date-label" [ngClass]="{'date-label-has-events': plannerDate.events && plannerDate.events.length > 0}">{{plannerDate.calendarDate | date: 'dd'}}</div>
+          <div>
+            <div *ngFor="let event of plannerDate.events" fxLayout="row" fxLayoutGap="1px" fxLayoutAlign="start" class="calendar-cell-event">
+              <div>{{event.startDate | date: 'h:mm'}}{{event.startDate | date: 'a' | lowercase}} &nbsp;{{event.name}}</div>
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+    <tfoot>
+    </tfoot>
+  </table>
+</div>
+

@@ -1,0 +1,15 @@
+@import 'node_modules/@angular/material/theming';
+@include mat-core();
+
+/* ======== Angular material custom themes ======== */
+@import 'node_modules/@angular/material/theming';
+@include mat-core();
+
+/* ======== Angular material custom themes ======== */
+$primary: mat-palette($mat-purple);
+$accent: mat-palette($mat-light-blue);
+$warn: mat-palette($mat-red, 100, 900);
+
+$planner-theme: mat-light-theme($primary, $accent, $warn);
+
+@include angular-material-theme($planner-theme);

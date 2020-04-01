@@ -1,0 +1,17 @@
+.banner-icon {
+  padding: 0 14px;
+}
+
+.sticky-header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 100% !important;
+}
+
+
+.content {
+  margin: 15px !important;
+}

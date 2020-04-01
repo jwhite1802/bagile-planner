@@ -1,0 +1,21 @@
+<mat-card class="calendar-cell-selected calendar-daily-preview">
+  <mat-card-title>{{plannerDate.calendarDate | date: 'dd MMM yyyy'}}</mat-card-title>
+  <mat-card-content>
+    <div fxLayout="column" fxLayoutAlign="start none" fxLayoutGap="15px;">
+      <ng-container  *ngFor="let hour of hours">
+        <div class="daily-hour" *ngIf="(hour >= firstHour && hour <=lastHour) || hour >= minHour && hour <= maxHour">
+          {{plannerHours[hour].hourTime | date: 'hh:mmaa' | lowercase}}
+          <div class="calendar-cell-event" *ngFor="let event of plannerHours[hour].events">
+            <div>{{event.startDate | date: 'h:mm'}}{{event.startDate | date: 'a' | lowercase}} &nbsp;{{event.name}}</div>
+            <div *ngIf="event.location">@ {{event.location}}</div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-flat-button><mat-icon>navigate_before</mat-icon>Previous</button>
+    <div class="spacer">&nbsp;</div>
+    <button mat-flat-button>Next<mat-icon>navigate_next</mat-icon></button>
+  </mat-card-actions>
+</mat-card>

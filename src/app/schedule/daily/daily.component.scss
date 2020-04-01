@@ -1,0 +1,8 @@
+@import 'src/styles/variable';
+.daily-hour {
+  border-color: mat-color($accent, 400);
+  border-top-style: none;
+  border-left-style: none;
+  border-right-style: none;
+  border-top-bottom: dashed
+}
