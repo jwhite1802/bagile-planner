@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {PlannerEvent} from '../domain/planner-event';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {map, take} from 'rxjs/operators';
+import {BehaviorSubject, empty, from, Observable, of} from 'rxjs';
+import {catchError, map, mergeMap, take} from 'rxjs/operators';
 import {PlannerDate} from '../domain/planner-date';
 
 @Injectable({
@@ -12,6 +12,7 @@ export class ScheduleService {
   selectedDate: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
   previousDate: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
   nextDate: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
+  visibleDates: BehaviorSubject<Date[]> = new BehaviorSubject<Date[]>([]);
   constructor(private http: HttpClient) { }
   private getEvents(params: HttpParams): Observable<PlannerEvent[]> {
     console.log(params);
@@ -24,19 +25,24 @@ export class ScheduleService {
       );
   }
 
-  getOneDayEvents(date: Date) {
+  getOneDayEvents(date: Date): Observable<PlannerDate> {
     let params: HttpParams = new HttpParams();
     params = params.append('dateKey', '^' + String(date.getFullYear()) + '.' + date.getMonth() + '.' + date.getDate() + '$');
     return this.http.get<PlannerEvent[]>('/api/events', { params })
       .pipe(
         take(1),
-        map((events: PlannerEvent[]) => {
-          return events;
+        map((plannerEvents: PlannerEvent[]) => {
+          const plannerDate: PlannerDate = {
+            calendarDate: this.setMidnightDate(date),
+            events: plannerEvents
+          }
+
+          return plannerDate;
         })
       );
   }
 
-  createMonthGrid(selectedDate: Date): {rows: PlannerDate[][], dataObservers: Array<Observable<PlannerEvent[]>>} {
+  createMonthGrid(selectedDate: Date): {rows: PlannerDate[][] } {
     let startDate = this.setMidnightDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1));
     let endDate = this.setMidnightDate(new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0));
     let sundayAdjuster = (-1 * (startDate.getDay())) + 1;
@@ -53,13 +59,13 @@ export class ScheduleService {
     this.previousDate.next(this.setMidnightDate(new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() - 1)));
     this.nextDate.next(this.setMidnightDate(new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1)));
     let currentDate = this.setMidnightDate(new Date(startDate));
-    const dataObservers: Array<Observable<PlannerEvent[]>> = [];
+    let dates: Array<Date> = [];
     let rowCounter = 0;
     let cellCounter = 0;
     const rows: PlannerDate[][] = [];
 
     while (currentDate <= endDate) {
-      dataObservers.push(this.getOneDayEvents(currentDate));
+      dates.push(currentDate);
       if (cellCounter === 0 ) {
         rows[rowCounter] = [];
       }
@@ -73,7 +79,31 @@ export class ScheduleService {
       }
       currentDate = this.setMidnightDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1));
     }
-    return { rows, dataObservers} ;
+    dates = dates.sort();
+    this.visibleDates.next(dates);
+    return { rows };
+  }
+
+  getDateKey(date: Date) {
+    return [String(date.getFullYear()), String(date.getMonth()), String(date.getDate())].join('.');
+  }
+
+  getMultiplePlannerDates(): Observable<Map<string, PlannerDate>> {
+    const plannerDateMap: Map<string, PlannerDate> = new Map();
+    return from(this.visibleDates.value)
+      .pipe(
+        mergeMap(
+          (date: Date) => this.getOneDayEvents(date)
+            .pipe(
+              catchError(() => of([])),
+              map((plannerDate: PlannerDate) => {
+                plannerDateMap.set(
+                   String(date.getFullYear()) + '.' + String(date.getMonth()) + '.' + String(date.getDate()), plannerDate);
+                return plannerDateMap;
+              })
+            ),
+          2),
+      );
   }
 
   setMidnightDate(date: Date): Date {
