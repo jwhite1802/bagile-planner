@@ -33,16 +33,16 @@ export class MonthlyComponent implements OnInit {
     this.scheduleService.selectedDate
       .pipe(
         concatMap(() => {
-          return this.scheduleService.getMultiplePlannerDates()
+          return this.scheduleService.getMonthEvents()
             .pipe(
-              map((dateEventMap: Map<string, PlannerDate>) => {
+              map((dateEventMap: Map<string, PlannerEvent[]>) => {
                   this.refreshDisplay();
                   this.rows.forEach((row: PlannerDate[]) => {
                     row.forEach((cell: PlannerDate) => {
                       const dateKey = this.scheduleService.getDateKey(cell.calendarDate);
                       cell.events = [];
                       if (dateEventMap.has(dateKey)) {
-                        cell.events = dateEventMap.get(this.scheduleService.getDateKey(cell.calendarDate)).events;
+                        cell.events = dateEventMap.get(this.scheduleService.getDateKey(cell.calendarDate));
                       }
                     });
                   });
@@ -54,12 +54,6 @@ export class MonthlyComponent implements OnInit {
         this.selectedDate = this.scheduleService.selectedDate.value;
       });
   }
-
-// this.rows.forEach((row: PlannerDate[]) => {
-//   row.forEach((cell: PlannerDate) => {
-//     cell.events = dateEventMap.get(this.scheduleService.getDateKey(cell.calendarDate));
-//   });
-
 
   setNewDate(plannerDate: PlannerDate) {
     this.scheduleService.selectedDate.next(plannerDate.calendarDate);

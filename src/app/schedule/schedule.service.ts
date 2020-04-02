@@ -1,29 +1,20 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {PlannerEvent} from '../domain/planner-event';
-import {BehaviorSubject, empty, from, Observable, of} from 'rxjs';
-import {catchError, map, mergeMap, take} from 'rxjs/operators';
+import {BehaviorSubject, empty, forkJoin, from, Observable, of, throwError} from 'rxjs';
+import {catchError, concatMap, map, mergeMap, take} from 'rxjs/operators';
 import {PlannerDate} from '../domain/planner-date';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ScheduleService {
+
   selectedDate: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
   previousDate: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
   nextDate: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
   visibleDates: BehaviorSubject<Date[]> = new BehaviorSubject<Date[]>([]);
   constructor(private http: HttpClient) { }
-  private getEvents(params: HttpParams): Observable<PlannerEvent[]> {
-    console.log(params);
-    return this.http.get<PlannerEvent[]>('/api/events', { params })
-      .pipe(
-        take(1),
-        map((events: PlannerEvent[]) => {
-          return events;
-        })
-      );
-  }
 
   getOneDayEvents(date: Date): Observable<PlannerDate> {
     let params: HttpParams = new HttpParams();
@@ -35,7 +26,7 @@ export class ScheduleService {
           const plannerDate: PlannerDate = {
             calendarDate: this.setMidnightDate(date),
             events: plannerEvents
-          }
+          };
 
           return plannerDate;
         })
@@ -84,8 +75,93 @@ export class ScheduleService {
     return { rows };
   }
 
-  getDateKey(date: Date) {
-    return [String(date.getFullYear()), String(date.getMonth()), String(date.getDate())].join('.');
+  getDateKey(date: Date): string {
+    return date.toISOString().split('T')[0];
+  }
+
+  getMonthKey(date: Date): string {
+    const keyParts: string[] = date.toISOString().split('T')[0].split('-');
+    keyParts.pop();
+    return keyParts.join('-');
+  }
+
+  getWeekStartKey(date: Date): string {
+    if (date.getDay() === 0 ) {
+      return this.getDateKey(date);
+    }
+    const sundayAdjuster = (-1 * (date.getDay())) + 1;
+    return this.getDateKey(this.setMidnightDate(new Date(date.getFullYear(), date.getMonth(), sundayAdjuster)));
+  }
+
+  getQuarterKey(date: Date, fiscal?: boolean): string {
+    let month: number = date.getMonth();
+    let year: number = date.getFullYear();
+    let prefix = 'CY';
+    if (fiscal) {
+      prefix = 'FY';
+      if (month >= 9) {
+        month = month - 9;
+        year++;
+      } else {
+        month = month + 3;
+      }
+    }
+    const quarter: string = 'Q' + String(Math.floor((month / 3)) + 1).padStart(2, '0');
+    return [prefix + String(year), quarter].join(':');
+  }
+
+  getYearKey(date: Date, fiscal?: boolean): string {
+    return this.getQuarterKey(date, fiscal).split(':')[0];
+  }
+
+  getMonthEvents(): Observable<Map<string, PlannerEvent[]>> {
+    const selectedDate = this.selectedDate.value;
+    const currentMonthKey: string = this.getMonthKey(selectedDate);
+    const previousMonthKey: string = this.getMonthKey(
+      this.setMidnightDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 0))
+    );
+    const nextMonthKey: string = this.getMonthKey(
+      this.setMidnightDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1))
+    );
+    const monthKeys: string[] = [
+      previousMonthKey,
+      currentMonthKey,
+      nextMonthKey
+    ];
+    const eventMap: Map<string, PlannerEvent[]> = new Map();
+    return from(monthKeys)
+      .pipe(
+        mergeMap(
+          (keyValue: string) => this.getEvents('monthKey', keyValue)
+            .pipe(
+              map((plannerEvents: PlannerEvent[]) => {
+                plannerEvents.forEach((plannerEvent: PlannerEvent) => {
+                  if (eventMap.has(plannerEvent.dateKey)) {
+                    eventMap.get(plannerEvent.dateKey).push(plannerEvent);
+                  } else {
+                    eventMap.set(plannerEvent.dateKey, [plannerEvent]);
+                  }
+                });
+              }),
+              catchError(() => of([]))
+            ),
+          2),
+        map(() => {
+          return eventMap;
+        })
+      );
+  }
+
+  getEvents(keyName: string, keyValue: string): Observable<PlannerEvent[]> {
+    let params: HttpParams = new HttpParams();
+    params = params.append(keyName, '^' + keyValue + '$');
+    return this.http.get('/api/events', { params})
+      .pipe(
+        catchError((err: Error) => {
+          console.error(err);
+          return of(null);
+        })
+      );
   }
 
   getMultiplePlannerDates(): Observable<Map<string, PlannerDate>> {
