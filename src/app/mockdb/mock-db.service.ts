@@ -46,7 +46,7 @@ export class MockDbService implements InMemoryDbService {
     this.scheduleService = this.injector.get(ScheduleService);
     const db = {
       events: this.createEvents()
-    };console.log(db);
+    };
     return db;
   }
 }
