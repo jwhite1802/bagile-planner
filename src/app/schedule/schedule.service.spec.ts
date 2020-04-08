@@ -31,10 +31,9 @@ fdescribe('ScheduleService', () => {
     expect(newDate.getHours()).toEqual(0);
     expect(newDate.getMinutes()).toEqual(0);
     expect(newDate.getSeconds()).toEqual(0);
-    expect(newDate.getMilliseconds).toEqual(0);
   });
 
-  it( 'areDatesEqual(d1, d2) ==>', () => {
+  it( 'areDatesEqual(d1, d2) ==> true', () => {
     expect(service.areDatesEqual(service.setMidnightDate(new Date()), service.setMidnightDate(new Date()))).toEqual(true);
   });
 

@@ -6,6 +6,7 @@ import {PlannerDate} from '../domain/planner-date';
 import {DailyDialogComponent} from './daily-dialog/daily-dialog.component';
 import {PlannerEvent} from '../domain/planner-event';
 import {ScheduleService} from './schedule.service';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-schedule',
@@ -16,6 +17,7 @@ export class ScheduleComponent implements OnInit {
   @ViewChild('monthSchedule') MonthlyComponent;
   today: Date = new Date();
   selectedDate = new Date();
+  plannerDate: PlannerDate;
   nextDate: Date;
   previousDate: Date;
   isLarge = true;
@@ -26,7 +28,11 @@ export class ScheduleComponent implements OnInit {
     );
 
 
-  constructor(private breakpointObserver: BreakpointObserver, private scheduleService: ScheduleService) {}
+  constructor(
+    private breakpointObserver: BreakpointObserver,
+    private scheduleService: ScheduleService,
+    private dailyDialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.today = this.scheduleService.setMidnightDate(new Date());
@@ -34,10 +40,6 @@ export class ScheduleComponent implements OnInit {
     this.isHandset$.subscribe((result: boolean) => {
       this.isLarge = !result;
     });
-  }
-
-  setDate(plannerDate: PlannerDate) {
-    this.selectedDate = plannerDate.calendarDate;
   }
 
   nextSchedule() {
@@ -48,5 +50,19 @@ export class ScheduleComponent implements OnInit {
   previousSchedule() {
     this.scheduleService.selectedDate.next(this.scheduleService.previousDate.value);
     this.selectedDate = this.scheduleService.selectedDate.value;
+  }
+
+  previewDate(plannerDate: PlannerDate) {
+    this.plannerDate = plannerDate;
+    const dialogRef = this.dailyDialog.open(DailyDialogComponent, {
+      width: '60%',
+      position: {top: '100px', right: '100px'},
+      data: {plannerDate: this.plannerDate}
+    });
+
+    dialogRef.afterClosed().subscribe((result: PlannerDate) => {
+      console.log('The dialog was closed');
+      this.plannerDate = result;
+    });
   }
 }

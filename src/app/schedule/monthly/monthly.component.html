@@ -14,12 +14,12 @@
           [ngClass]="{ 'calendar-cell-current-month': plannerDate.calendarDate.getMonth() === selectedDate.getMonth(),
           'calendar-cell-today': scheduleService.areDatesEqual(plannerDate.calendarDate, today),
           'calendar-cell-selected': selectedPlannerDate && scheduleService.areDatesEqual(plannerDate.calendarDate, selectedPlannerDate.calendarDate) }"
-          (click)="setNewDate(plannerDate)">
+          (click)="previewDate(plannerDate)">
         <div fxLayout="column" fxLayoutGap="5px;" fxLayoutAlign="start" class="calendar-cell">
           <div class="date-label" [ngClass]="{'date-label-has-events': plannerDate.events && plannerDate.events.length > 0}">{{plannerDate.calendarDate | date: 'dd'}}</div>
           <div>
             <div *ngFor="let event of plannerDate.events" fxLayout="row" fxLayoutGap="1px" fxLayoutAlign="start" class="calendar-cell-event">
-              <div>{{event.startDate | date: 'h:mm'}}{{event.startDate | date: 'a' | lowercase}} &nbsp;{{event.name}}</div>
+              <div>{{event.startDate | date: 'h:mma' | lowercase}}&nbsp;{{event.name}}</div>
             </div>
           </div>
         </div>

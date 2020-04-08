@@ -45,6 +45,11 @@ export class ScheduleService {
     params = params.append(keyName, '^' + keyValue + '$');
     return this.http.get('/api/events', { params})
       .pipe(
+        map((plannerEvents: PlannerEvent[]) => {
+          return plannerEvents.sort((plannerEvent1: PlannerEvent, plannerEvent2: PlannerEvent) => {
+            return new Date(plannerEvent1.startDate).getTime()  - new Date(plannerEvent2.startDate).getTime();
+          });
+        }),
         catchError((err: Error) => {
           console.error(err);
           return of(null);
@@ -63,11 +68,14 @@ export class ScheduleService {
   }
 
   getDateKey(date: Date): string {
-    return date.toISOString().split('T')[0];
+    const localDateParts: string[] = date.toLocaleDateString()
+      .split('/')
+      .map((part: string) => part.padStart(2, '0'));
+    return [localDateParts[2], localDateParts[0], localDateParts[1]].join('-');
   }
 
   getMonthKey(date: Date): string {
-    const keyParts: string[] = date.toISOString().split('T')[0].split('-');
+    const keyParts: string[] = this.getDateKey(date).split('-');
     keyParts.pop();
     return keyParts.join('-');
   }
