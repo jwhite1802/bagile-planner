@@ -19,9 +19,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { ReactiveFormsModule } from '@angular/forms';
 import {MatMenuModule} from '@angular/material/menu';
+import { AgendaComponent } from './agenda/agenda.component';
 
 @NgModule({
-  declarations: [ScheduleComponent, MonthlyComponent, DailyComponent, DailyDialogComponent],
+  declarations: [ScheduleComponent, MonthlyComponent, DailyComponent, DailyDialogComponent, AgendaComponent],
   entryComponents: [DailyDialogComponent],
     imports: [
         CommonModule,

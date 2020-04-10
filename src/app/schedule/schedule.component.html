@@ -4,7 +4,7 @@
       <a mat-flat-button (click)="previousSchedule()"><mat-icon>navigate_before</mat-icon>{{ isLarge ? 'Previous': ''}}</a>
     </div>
     <div>
-      <h2 class="page-header">{{selectedDate | date: 'MMMM yyyy'}}
+      <h2 class="page-header">{{scheduleService.selectedDate.value | date: 'MMMM yyyy'}}
         <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
           <mat-icon>more_vert</mat-icon>
         </button>
@@ -29,9 +29,5 @@
     </div>
   </div>
   <div class="schedule-container">
-    <app-monthly
-      #monthSchedule [selectedDate]="selectedDate"
-      [isLarge]="isLarge"
-      (onDatePreview)="previewDate($event)"></app-monthly>
-  </div>
+    <router-outlet></router-outlet>
 </div>

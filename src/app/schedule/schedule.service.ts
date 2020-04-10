@@ -4,6 +4,8 @@ import {PlannerEvent} from '../domain/planner-event';
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
 import {catchError, map, mergeMap} from 'rxjs/operators';
 import {PlannerDate} from '../domain/planner-date';
+import {Grid} from '../domain/grid';
+import {ParamMap} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -57,6 +59,14 @@ export class ScheduleService {
       );
   }
 
+  getDateFromParamMap(paramMap: ParamMap): Date {
+    let dateKey: string = this.getDateKey(this.setMidnightDate(new Date()));
+    if (paramMap.has('dateKey')) {
+      dateKey = paramMap.get('dateKey');
+    }
+    return this.setDateFromDateKey(dateKey);
+  }
+
   setMidnightDate(date: Date): Date {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
   }
@@ -72,6 +82,18 @@ export class ScheduleService {
       .split('/')
       .map((part: string) => part.padStart(2, '0'));
     return [localDateParts[2], localDateParts[0], localDateParts[1]].join('-');
+  }
+
+  setDateFromDateKey(dateKey: string): Date {
+    const dateParts: number[] = dateKey.split('-')
+      .map((key: string, index) => {
+        let keyNum: number = Number(key);
+        if (index === 1) {
+          keyNum = keyNum - 1;
+        }
+        return keyNum;
+      });
+    return this.setMidnightDate(new Date(dateParts[0], dateParts[1], dateParts[2]));
   }
 
   getMonthKey(date: Date): string {
@@ -143,7 +165,7 @@ export class ScheduleService {
     return this.getEventMap('weekStartKey', monthKeys);
   }
 
-  createMonthGrid(selectedDate: Date): {rows: PlannerDate[][] } {
+  createMonthGrid(selectedDate: Date): Grid {
     let startDate = this.setMidnightDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1));
     let endDate = this.setMidnightDate(new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0));
     let sundayAdjuster = (-1 * (startDate.getDay())) + 1;

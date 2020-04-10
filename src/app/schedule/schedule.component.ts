@@ -1,12 +1,13 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {forkJoin, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {map, shareReplay} from 'rxjs/operators';
 import {PlannerDate} from '../domain/planner-date';
 import {DailyDialogComponent} from './daily-dialog/daily-dialog.component';
-import {PlannerEvent} from '../domain/planner-event';
 import {ScheduleService} from './schedule.service';
 import {MatDialog} from '@angular/material/dialog';
+import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+import {ScheduleType} from '../domain/schedule-type.enum';
 
 @Component({
   selector: 'app-schedule',
@@ -18,9 +19,11 @@ export class ScheduleComponent implements OnInit {
   today: Date = new Date();
   selectedDate = new Date();
   plannerDate: PlannerDate;
+  loading = false;
   nextDate: Date;
   previousDate: Date;
   isLarge = true;
+  scheduleType: ScheduleType = ScheduleType.MONTHLY;
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches),
@@ -30,26 +33,36 @@ export class ScheduleComponent implements OnInit {
 
   constructor(
     private breakpointObserver: BreakpointObserver,
-    private scheduleService: ScheduleService,
-    private dailyDialog: MatDialog
+    public scheduleService: ScheduleService,
+    private dailyDialog: MatDialog,
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.today = this.scheduleService.setMidnightDate(new Date());
-    this.scheduleService.selectedDate.next(this.today);
     this.isHandset$.subscribe((result: boolean) => {
       this.isLarge = !result;
     });
   }
 
   nextSchedule() {
-    this.scheduleService.selectedDate.next(this.scheduleService.nextDate.value);
-    this.selectedDate = this.scheduleService.selectedDate.value;
+    this.router.navigate(['/schedule', this.scheduleType, this.scheduleService.getDateKey(this.scheduleService.nextDate.value)])
+      .then(() => {
+        this.selectedDate = this.scheduleService.selectedDate.value;
+      })
+      .catch((reason: any) => {
+        console.error(reason);
+      });
   }
 
   previousSchedule() {
-    this.scheduleService.selectedDate.next(this.scheduleService.previousDate.value);
-    this.selectedDate = this.scheduleService.selectedDate.value;
+    this.router.navigate(['/schedule', this.scheduleType, this.scheduleService.getDateKey(this.scheduleService.previousDate.value)])
+      .then(() => {
+        this.selectedDate = this.scheduleService.selectedDate.value;
+      })
+      .catch((reason: any) => {
+        console.error(reason);
+      });
   }
 
   previewDate(plannerDate: PlannerDate) {

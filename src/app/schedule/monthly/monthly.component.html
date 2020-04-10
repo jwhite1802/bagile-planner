@@ -11,7 +11,7 @@
     <tbody>
     <tr *ngFor="let row of rows; index as rowIndex" class="calendar-cell-row">
       <td *ngFor="let plannerDate of row; index as cellIndex" valign="top"
-          [ngClass]="{ 'calendar-cell-current-month': plannerDate.calendarDate.getMonth() === selectedDate.getMonth(),
+          [ngClass]="{ 'calendar-cell-current-month': plannerDate.calendarDate.getMonth() === scheduleService.selectedDate.value.getMonth(),
           'calendar-cell-today': scheduleService.areDatesEqual(plannerDate.calendarDate, today),
           'calendar-cell-selected': selectedPlannerDate && scheduleService.areDatesEqual(plannerDate.calendarDate, selectedPlannerDate.calendarDate) }"
           (click)="previewDate(plannerDate)">
