@@ -20,26 +20,30 @@ import { MatRadioModule } from '@angular/material/radio';
 import { ReactiveFormsModule } from '@angular/forms';
 import {MatMenuModule} from '@angular/material/menu';
 import { AgendaComponent } from './agenda/agenda.component';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @NgModule({
   declarations: [ScheduleComponent, MonthlyComponent, DailyComponent, DailyDialogComponent, AgendaComponent],
   entryComponents: [DailyDialogComponent],
-    imports: [
-        CommonModule,
-        ScheduleRoutingModule,
-        FlexLayoutModule,
-        MatButtonModule,
-        MatIconModule,
-        MatDialogModule,
-        MatSidenavModule,
-        MatListModule,
-        MatToolbarModule,
-        MatCardModule,
-        MatInputModule,
-        MatSelectModule,
-        MatRadioModule,
-        ReactiveFormsModule,
-        MatMenuModule
-    ]
+  imports: [
+    CommonModule,
+    ScheduleRoutingModule,
+    FlexLayoutModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    MatSidenavModule,
+    MatListModule,
+    MatToolbarModule,
+    MatCardModule,
+    MatInputModule,
+    MatSelectModule,
+    MatRadioModule,
+    ReactiveFormsModule,
+    MatMenuModule,
+    MatChipsModule,
+    MatButtonToggleModule
+  ]
 })
 export class ScheduleModule { }

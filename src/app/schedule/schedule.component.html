@@ -1,33 +1,32 @@
-<div class="calendar-container" fxLayout="column" fxLayoutAlign="center" fxLayoutGap="30">
-  <div fxLayout="row" fxLayoutAlign="space-between">
-    <div>
-      <a mat-flat-button (click)="previousSchedule()"><mat-icon>navigate_before</mat-icon>{{ isLarge ? 'Previous': ''}}</a>
-    </div>
-    <div>
-      <h2 class="page-header">{{scheduleService.selectedDate.value | date: 'MMMM yyyy'}}
-        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item>
-            <mat-icon>dialpad</mat-icon>
-            <span>Redial</span>
-          </button>
-          <button mat-menu-item disabled>
-            <mat-icon>voicemail</mat-icon>
-            <span>Check voice mail</span>
-          </button>
-          <button mat-menu-item>
-            <mat-icon>notifications_off</mat-icon>
-            <span>Disable alerts</span>
-          </button>
-        </mat-menu>
-      </h2>
-    </div>
-    <div>
-      <a mat-flat-button (click)="nextSchedule()">{{isLarge ? 'Next' : ''}}<mat-icon>navigate_next</mat-icon></a>
-    </div>
-  </div>
-  <div class="schedule-container">
-    <router-outlet></router-outlet>
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <button color="primary" mat-flat-button (click)="previousSchedule()">
+      <mat-icon>navigate_before</mat-icon>
+    </button>
+    <button color="primary" mat-flat-button (click)="nextSchedule()">
+      <mat-icon>navigate_next</mat-icon>
+    </button>
+    <button color="primary" mat-flat-button (click)="gotoToday()">Today <mat-icon>today</mat-icon></button>
+    <h1 style="margin-left: 30px">
+      <ng-container *ngIf="scheduleType === ScheduleType.AGENDA; then agendaLabel else defaultLabel"></ng-container>
+      <ng-template #agendaLabel>
+        {{scheduleService.visibleDates.value[0] | date: 'dd MMM yyyy'}} -
+        {{scheduleService.visibleDates.value[scheduleService.visibleDates.value.length - 1] | date: 'dd MMM yyyy'}}
+      </ng-template>
+      <ng-template #defaultLabel>
+        {{scheduleService.selectedDate.value | date: 'MMMM yyyy'}}
+      </ng-template>
+    </h1>
+    <div class="spacer"></div>
+    <ng-container *ngIf="scheduleType === ScheduleType.AGENDA; then monthlyButton else agendaButton"></ng-container>
+    <ng-template #monthlyButton>
+      <button color="primary" mat-flat-button (click)="setScheduleType(ScheduleType.MONTHLY)"> Monthly View  <mat-icon>calendar_today</mat-icon></button>
+    </ng-template>
+    <ng-template #agendaButton>
+      <button color="primary" mat-flat-button (click)="setScheduleType(ScheduleType.AGENDA)">Agenda View  <mat-icon>view_agenda</mat-icon></button>
+    </ng-template>
+  </mat-toolbar-row>
+</mat-toolbar>
+<div class="schedule-container">
+  <router-outlet></router-outlet>
 </div>

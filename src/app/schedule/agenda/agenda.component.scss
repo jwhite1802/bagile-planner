@@ -1,0 +1,23 @@
+@import 'variable';
+.agenda-container {
+
+}
+
+.agenda-date {
+  border-bottom-style: solid;
+  border-width: 1px;
+  border-color: mat-color($primary, 100);
+  padding: 15px;
+  font-weight: bold;
+}
+
+.agenda-today {
+  color: mat-color($primary);
+}
+.agenda-events {
+  font-weight: normal;
+}
+
+.agenda-date button {
+  margin-right: 30px;
+}

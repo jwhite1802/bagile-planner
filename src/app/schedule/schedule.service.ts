@@ -15,6 +15,7 @@ export class ScheduleService {
   previousDate: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
   nextDate: BehaviorSubject<Date> = new BehaviorSubject<Date>(null);
   visibleDates: BehaviorSubject<Date[]> = new BehaviorSubject<Date[]>([]);
+  agendaLength = 30;
   constructor(private http: HttpClient) { }
 
   private getEventMap(keyName: string, keysValues: string[]): Observable<Map<string, PlannerEvent[]>> {
@@ -163,6 +164,32 @@ export class ScheduleService {
       nextWeekKey
     ];
     return this.getEventMap('weekStartKey', monthKeys);
+  }
+
+  createAgendaGrid(selectedDate: Date): Grid {
+    const startDate = this.setMidnightDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate()));
+    const endDate = this.setMidnightDate(
+      new Date(startDate.getFullYear(), startDate.getMonth(), selectedDate.getDate() + this.agendaLength));
+    this.previousDate.next(this.setMidnightDate(
+      new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()  - this.agendaLength)));
+    this.nextDate.next(this.setMidnightDate(new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1)));
+    let currentDate = this.setMidnightDate(new Date(startDate));
+    let dates: Array<Date> = [];
+    let rowCounter = 0;
+    const cellCounter = 0;
+    const rows: PlannerDate[][] = [];
+    while (currentDate <= endDate) {
+      dates.push(currentDate);
+      rows[rowCounter] = [];
+      rows[rowCounter][cellCounter] = { calendarDate: this.setMidnightDate(currentDate), events: [] };
+      rowCounter++;
+      currentDate = this.setMidnightDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1));
+    }
+    dates = dates.sort((dateA: Date, dateB: Date) => {
+      return dateA.getTime() - dateB.getTime();
+    });
+    this.visibleDates.next(dates);
+    return { rows };
   }
 
   createMonthGrid(selectedDate: Date): Grid {

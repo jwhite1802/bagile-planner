@@ -6,7 +6,7 @@ import {PlannerDate} from '../domain/planner-date';
 import {DailyDialogComponent} from './daily-dialog/daily-dialog.component';
 import {ScheduleService} from './schedule.service';
 import {MatDialog} from '@angular/material/dialog';
-import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+import {ActivatedRoute, Data, ParamMap, Router, UrlSegment} from '@angular/router';
 import {ScheduleType} from '../domain/schedule-type.enum';
 
 @Component({
@@ -24,6 +24,7 @@ export class ScheduleComponent implements OnInit {
   previousDate: Date;
   isLarge = true;
   scheduleType: ScheduleType = ScheduleType.MONTHLY;
+  ScheduleType = ScheduleType;
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches),
@@ -43,6 +44,31 @@ export class ScheduleComponent implements OnInit {
     this.isHandset$.subscribe((result: boolean) => {
       this.isLarge = !result;
     });
+
+    this.route.data.subscribe((data: Data) => {
+      this.scheduleType = data.scheduleType;
+    });
+  }
+
+  setScheduleType(newType: ScheduleType) {
+    this.scheduleType = newType;
+    this.router.navigate(['/schedule', this.scheduleType, this.scheduleService.getDateKey(this.scheduleService.selectedDate.value)])
+      .then(() => {
+        this.selectedDate = this.scheduleService.selectedDate.value;
+      })
+      .catch((reason: any) => {
+        console.error(reason);
+      });
+  }
+
+  gotoToday() {
+    this.router.navigate(['/schedule', this.scheduleType, this.scheduleService.getDateKey(new Date())])
+      .then(() => {
+        this.selectedDate = this.scheduleService.selectedDate.value;
+      })
+      .catch((reason: any) => {
+        console.error(reason);
+      });
   }
 
   nextSchedule() {
