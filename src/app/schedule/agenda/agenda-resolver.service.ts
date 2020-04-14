@@ -6,6 +6,7 @@ import {Grid} from '../../domain/grid';
 import {map} from 'rxjs/operators';
 import {PlannerEvent} from '../../domain/planner-event';
 import {PlannerDate} from '../../domain/planner-date';
+import {EventType} from '../../domain/event-type.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -21,13 +22,16 @@ export class AgendaResolverService implements Resolve<Observable<Grid>> {
       .pipe(
         map((dateEventMap: Map<string, PlannerEvent[]>) => {
           grid.rows.forEach((row: PlannerDate[]) => {
-            row.forEach((cell: PlannerDate) => {
+           row.forEach((cell: PlannerDate) => {
               const dateKey = this.scheduleService.getDateKey(cell.calendarDate);
-              cell.events = [];
               if (dateEventMap.has(dateKey)) {
-                cell.events = dateEventMap.get(this.scheduleService.getDateKey(cell.calendarDate));
+                cell.events = dateEventMap.get(dateKey);
               }
-            });
+              cell.events
+                .sort((eventA: PlannerEvent, eventB: PlannerEvent) => {
+                  return new Date(eventA.startDate).getTime() - new Date(eventB.startDate).getTime();
+                });
+           });
           });
           return grid;
         })

@@ -1,6 +1,6 @@
 @import 'variable';
 .agenda-container {
-
+  // width:90vw;
 }
 
 .agenda-date {
@@ -20,4 +20,30 @@
 
 .agenda-date button {
   margin-right: 30px;
+}
+
+.agenda-event {
+  border-radius: 4px;
+  padding: 3px;
+}
+
+.agenda-event-type-normal {
+  background-color: mat-color($primary, 100);
+}
+
+.agenda-event-type-all-day-event {
+  background-color: mat-color($accent, 100);
+}
+
+.agenda-event-type-current-time {
+  border-bottom-color: red;
+  border-bottom-style: solid;
+  border-bottom-width: 3px;
+}
+
+.agenda-events {
+}
+
+.agenda-current-time {
+  position: relative;
 }

@@ -1,3 +1,5 @@
+import {EventType} from './event-type.enum';
+
 export interface PlannerEvent {
   id: string;
   name: string;
@@ -14,4 +16,5 @@ export interface PlannerEvent {
   description?: string;
   location?: string;
   allDay?: boolean;
+  eventType?: EventType;
 }

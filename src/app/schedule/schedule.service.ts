@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {PlannerEvent} from '../domain/planner-event';
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
@@ -6,6 +6,7 @@ import {catchError, map, mergeMap} from 'rxjs/operators';
 import {PlannerDate} from '../domain/planner-date';
 import {Grid} from '../domain/grid';
 import {ParamMap} from '@angular/router';
+import {EventType} from '../domain/event-type.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,13 @@ export class ScheduleService {
 
   private getEventMap(keyName: string, keysValues: string[]): Observable<Map<string, PlannerEvent[]>> {
     const eventMap: Map<string, PlannerEvent[]> = new Map();
+    eventMap.set(this.getDateKey(new Date()), [{
+        id: '',
+        name: 'NOW',
+        startDate: new Date(),
+        eventType: EventType.CURRENT_TIME
+      }]);
+
     return from(keysValues)
       .pipe(
         mergeMap(
@@ -179,9 +187,10 @@ export class ScheduleService {
     const cellCounter = 0;
     const rows: PlannerDate[][] = [];
     while (currentDate <= endDate) {
+      const events: PlannerEvent[] = [];
       dates.push(currentDate);
       rows[rowCounter] = [];
-      rows[rowCounter][cellCounter] = { calendarDate: this.setMidnightDate(currentDate), events: [] };
+      rows[rowCounter][cellCounter] = { calendarDate: this.setMidnightDate(currentDate), events};
       rowCounter++;
       currentDate = this.setMidnightDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1));
     }
