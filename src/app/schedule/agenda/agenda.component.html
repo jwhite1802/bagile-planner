@@ -1,37 +1,35 @@
-<div class="agenda-container" fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="start none">
-  <ng-container *ngFor="let row of grid.rows">
-    <div *ngFor="let cell of row" fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="start center" class="agenda-date">
-      <div>
-        <button mat-mini-fab [color]="scheduleService.areDatesEqual(cell.calendarDate, today) ? 'primary' : ''">{{cell.calendarDate | date: 'dd'}}</button>
-        <span [ngClass]="{ 'agenda-today': scheduleService.areDatesEqual(cell.calendarDate, today)}">{{cell.calendarDate | date: 'MMM, E' | uppercase}}</span>
-      </div>
-      <div fxFill class="agenda-events">
-        <ng-container *ngIf="!cell.events || cell.events.length === 0; then defaultEvents else hasEvents"></ng-container>
-        <ng-template #hasEvents>
-          <div fxLayout="column" fxFlex fxLayoutAlign="start stretch">
-            <ng-container *ngFor="let event of cell.events">
-              <div [ngSwitch]="event.eventType" class="agenda-event" [ngClass]="'agenda-event-type-' + event.eventType">
-                <ng-container *ngSwitchCase="EventType.ALL_DAY_EVENT">
-                  <span>{{event.name}}</span>
-                </ng-container>
-                <ng-container *ngSwitchCase="EventType.CURRENT_TIME">
-                  <span class="agenda-current-time">&nbsp;</span>
-                </ng-container>
-                <ng-container *ngSwitchDefault>
+<ng-container *ngFor="let row of grid.rows">
+  <div *ngFor="let cell of row" fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="start center" class="agenda-date">
+    <div>
+      <button mat-mini-fab [color]="scheduleService.areDatesEqual(cell.calendarDate, today) ? 'primary' : ''">{{cell.calendarDate | date: 'dd'}}</button>
+      <span [ngClass]="{ 'agenda-today': scheduleService.areDatesEqual(cell.calendarDate, today)}">{{cell.calendarDate | date: 'MMM, E' | uppercase}}</span>
+    </div>
+    <div fxFlex="60%" class="agenda-events">
+      <ng-container *ngIf="!cell.events || cell.events.length === 0; then defaultEvents else hasEvents"></ng-container>
+      <ng-template #hasEvents>
+        <div fxLayout="column" fxFlex fxLayoutAlign="start stretch">
+          <ng-container *ngFor="let event of cell.events">
+            <div [ngSwitch]="event.eventType" class="agenda-event" [ngClass]="'agenda-event-type-' + event.eventType">
+              <ng-container *ngSwitchCase="EventType.ALL_DAY_EVENT">
+                <span>{{event.name}}</span>
+              </ng-container>
+              <ng-container *ngSwitchCase="EventType.CURRENT_TIME">
+                <span class="agenda-event-type-current-time"></span>
+              </ng-container>
+              <ng-container *ngSwitchDefault>
                   <span class="agenda-event">
                     {{event.startDate | date: 'h:mma' | uppercase}} -
                     {{event.endDate | date: 'h:mma' | uppercase}}
                     {{event.name}}
                   </span>
-                </ng-container>
-              </div>
-            </ng-container>
-          </div>
-        </ng-template>
-        <ng-template #defaultEvents>
-          <div>No Events</div>
-        </ng-template>
-      </div>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
+      </ng-template>
+      <ng-template #defaultEvents>
+        <div>No Events</div>
+      </ng-template>
     </div>
-  </ng-container>
-</div>
+  </div>
+</ng-container>

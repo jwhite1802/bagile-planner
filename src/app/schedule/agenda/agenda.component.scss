@@ -36,9 +36,20 @@
 }
 
 .agenda-event-type-current-time {
-  border-bottom-color: red;
-  border-bottom-style: solid;
-  border-bottom-width: 3px;
+  border-color: red;
+  background-color: red;
+  height: 1px;
+  color: red;
+  font-size: x-small;
+}
+
+.agenda-event-type-current-time-circle {
+  border-radius: 50%;
+  border-color: red;
+  background-color: red;
+  height: 4px;
+  color: red;
+  font-size: x-small;
 }
 
 .agenda-events {
